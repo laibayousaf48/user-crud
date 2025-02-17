@@ -1,16 +1,36 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
-@Entity('users')
-export class User {
-  @PrimaryGeneratedColumn()
+// Interface for type checking
+export interface User {
+  id: number;
+  email: string;
+  password: string;
+  isVerified: boolean;
+  roleId?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Class for Swagger documentation
+export class UserModel implements User {
+  @ApiProperty({ description: 'User ID' })
   id: number;
 
-  @Column({ unique: true })
+  @ApiProperty({ description: 'User email' })
   email: string;
 
-  @Column()
-  password: string; // Hash before saving
+  @ApiProperty({ description: 'Hashed password' })
+  password: string;
 
-  @Column({ default: false })
+  @ApiProperty({ description: 'Verification status' })
   isVerified: boolean;
+
+  @ApiProperty({ description: 'Role ID', required: false })
+  roleId?: number;
+
+  @ApiProperty({ description: 'Creation timestamp' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'Last update timestamp' })
+  updatedAt: Date;
 }

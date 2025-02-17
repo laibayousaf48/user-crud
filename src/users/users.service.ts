@@ -1,32 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const user = this.userRepository.create({ ...createUserDto, password: hashedPassword });
-    return this.userRepository.save(user);  
+    return this.prisma.user.create({
+      data: {
+        ...createUserDto,
+        password: hashedPassword,
+      },
+    });
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return this.userRepository.find();
+  async getAllUsers() {
+    return this.prisma.user.findMany();
   }
 
-  async getUserById(id: number): Promise<User | null> {
-    return this.userRepository.findOne({ where: { id } });
+  async getUserById(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
   }
 
-  async deleteUser(id: number): Promise<void> {
-    await this.userRepository.delete(id);
+  async deleteUser(id: number) {
+    return this.prisma.user.delete({
+      where: { id },
+    });
   }
 }

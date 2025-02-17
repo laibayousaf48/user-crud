@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int            @id @default(autoincrement())
+  email      String        @unique
+  password   String
+  isVerified Boolean       @default(false)
+  provider   String        @default("local")
+  verifications Verification[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  role       UserRole?     @relation(fields: [roleId], references: [id])
+  roleId     Int?
+}
+
+model Verification {
+  id        Int      @id @default(autoincrement()) // Primary key with auto-increment
+  userId    Int      // Foreign key referencing User
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User
+  token     String   // Verification token
+  createdAt DateTime @default(now()) // Auto-set timestamp on creation
+  expiresAt DateTime // Expiration timestamp
+}
+
+model UserRole {
+  id   Int    @id @default(autoincrement()) // Primary key with auto-increment
+  name String @unique                       // Role name, ensuring uniqueness
+  users User[] // One-to-many relation with User (if needed)
+}
+

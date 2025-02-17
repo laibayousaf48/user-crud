@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmAsyncConfig } from './config/database.config';
+import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
-import { UserRoleModule } from './userRoles/user-role.module';
 import { VerificationModule } from './verification/verification.module';
+import { UserRoleModule } from './userRoles/user-role.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
+    PrismaModule,
     UsersModule,
-    UserRoleModule,
     VerificationModule,
+    UserRoleModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

@@ -1,22 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { PrismaService } from '../prisma/prisma.service';
 import { UserRole } from './user-role.entity';
 
 @Injectable()
 export class UserRoleService {
-  constructor(
-    @InjectRepository(UserRole)
-    private userRoleRepository: Repository<UserRole>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  createRole(name: string): Promise<UserRole> {
-    const role = new UserRole();
-    role.name = name;
-    return this.userRoleRepository.save(role);
+  async createRole(name: string): Promise<UserRole> {
+    return this.prisma.userRole.create({
+      data: { name }
+    });
   }
 
-  getRoles(): Promise<UserRole[]> {
-    return this.userRoleRepository.find();
+  async getRoles(): Promise<UserRole[]> {
+    return this.prisma.userRole.findMany();
   }
 }
